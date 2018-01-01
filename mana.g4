@@ -108,7 +108,7 @@ enum_elt:
         ;
 
 typedef_decl:
-                'local'? 'type_' ID '=' type_
+                'local'? 'type' ID '=' type_
             ;
 
 class_decl:
@@ -143,7 +143,7 @@ static_method:
              ;
 
 class_attribute:
-                   'local'? var_decl
+                   'let' 'local'? 'mut'? id_list (':' type_)? ('=' expression_list)
                ;
 
 static_class_attribute:
@@ -188,7 +188,7 @@ op_decl:
        ;
 
 var_decl:
-            'let' 'mut'? id_list (':' type_)? ('=' expression)
+            'let' 'mut'? id_list (':' type_)? ('=' expression_list)
         ;
 
 block:
