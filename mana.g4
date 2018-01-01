@@ -116,7 +116,7 @@ class_decl:
           ;
 
 class_extends:
-                 'extends' namespace
+                 'extends' class_or_interface_type
              ;
 
 class_definition:
@@ -168,6 +168,9 @@ interface_method:
 interface_operator:
                       'local'? op_header
               ;
+class_or_interface_type:
+                           namespace ('<' id_list '>')?
+                       ;
 
 
 fn_header:
