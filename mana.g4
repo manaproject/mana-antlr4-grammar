@@ -1,7 +1,7 @@
 /**
  * Define a grammar called Hello
  */
-grammar mana;
+grammar Mana;
 
 /*
  * Parser rules
@@ -12,7 +12,7 @@ program:
 
 // Import Statements
 import_block: 
-                'import' '(' import_statements? ')'
+                'import' '(' import_statements? ')' 
             ;
 
 import_statements:
@@ -66,6 +66,11 @@ type_:
 	namespace ('<' type_list '>')?
     |   basic_type
     |   type_ '[' ']'
+    |   '{' namespace_list '}'
+	;
+	
+namespace_list:
+	(namespace ',')* namespace
 	;
 
 type_list:
@@ -116,7 +121,7 @@ class_decl:
           ;
 
 class_extends:
-                 'extends' class_or_interface_type
+                 ':' class_or_interface_type
              ;
 
 class_definition:
@@ -144,6 +149,7 @@ static_method:
 
 class_attribute:
                    'let' 'local'? 'mut'? id_list (':' type_)? ('=' expression_list)
+               |   'let' 'local'? 'mut'? '(' id_list ')' (':' type_)? ('=' expression_list)
                ;
 
 static_class_attribute:
@@ -169,7 +175,7 @@ interface_operator:
                       'local'? op_header
               ;
 class_or_interface_type:
-                           namespace ('<' id_list '>')?
+                           namespace ('<' type_list '>')?
                        ;
 
 
@@ -252,11 +258,11 @@ match_stmt:
           ;
 
 match_elt:
-              expression '=>' statement
+              expression ':' statement
           ;
 
 match_else:
-              'else' '=>' statement
+              'else' ':' statement
           ;
 
 annotations:
@@ -293,7 +299,7 @@ expression_list:
 
 expression: 
                   var_decl 'in' expression
-              |   'match' expression '{' (expression '=>' expression)+ 'else' '=>' expression'}'
+              |   'match' expression '{' (expression ':' expression)+ 'else' ':' expression'}'
               |   op_assign
           ;
 
@@ -367,7 +373,7 @@ op_unary:
 
 op_pointer:
               op_pointer '.' value
-          |   op_pointer '[' expression_list ']' 
+          |   op_pointer '[' expression_list ']'
           |   op_pointer  '(' fn_params_expressions? ')'
           |   value
           ;
@@ -407,6 +413,8 @@ value:
      |   namespace
      |   lambda_expression
      |   array_comprehension
+     |   '[' expression_list ']'
+     |   '{' obj_fields '}'
      ;
 
 lambda_expression:
@@ -414,9 +422,14 @@ lambda_expression:
                  ;
 
 array_comprehension:
-                       '[' 'for' ID (':' type_)? 'in' expression ('if' expression)? '=>' expression ']'
+                       '[' 'for' ID (':' type_)? 'in' expression ('if' expression)? ':' expression ']'
                    ;
-         
+
+obj_fields: 
+			(ID '=' expression ',')* ID '=' expression
+		  ;
+
+	
        
 /*
  * Lexer rules
@@ -467,6 +480,9 @@ fragment Letter
     | [\uD800-\uDBFF] [\uDC00-\uDFFF] // covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
     ;
 
+fragment NewLine
+	: ('\r'?'\n')+
+	;
 
 OVERRIDABLE_OP:
                   '+'
